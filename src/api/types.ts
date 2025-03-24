@@ -18,6 +18,11 @@ export interface Fair {
   type: string;
 }
 
+export interface BannerInfo extends Fair {
+  image_src: string;
+  title: string;
+}
+
 // API 응답 타입 정의
 export interface FairsResponse {
   fairs: Fair[];

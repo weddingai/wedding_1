@@ -1,16 +1,53 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { Fair, getMainCategoryFairs } from "@/api";
-import { EmptySlide, FairCard, FairSlide } from "@/components";
+import { Fair, getMainCategoryFairs, BannerInfo } from "@/api";
+import { FairCard } from "@/components";
+import Banner from "./_components/Banner";
 
 export default function Home() {
   const [fairs, setFairs] = useState<Fair[]>([]);
-  const [totalPages, setTotalPages] = useState<string>("0");
   const [currentPage, setCurrentPage] = useState<string>("1");
+  const [totalPages, setTotalPages] = useState<string>("1");
+  const [banners, setBanners] = useState<BannerInfo[]>([]);
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const params = {
+          main: "서울",
+          sub: "",
+          type: "웨딩",
+          page: "1",
+          size: "3",
+        };
+        const data = await getMainCategoryFairs(params);
+        const preBanners = data.fairs;
+
+        if (preBanners && preBanners.length > 0) {
+          // 랜덤 이미지 소스 생성
+          const randomImageSources = Array.from(
+            { length: 6 },
+            (_, i) => `/images/Banner_${i + 1}.jpeg`
+          ).sort(() => Math.random() - 0.5);
+
+          // 페어 데이터의 첫 3개를 가져와서 이미지 소스만 랜덤으로 변경
+          const bannerData: BannerInfo[] = preBanners
+            .slice(0, 3)
+            .map((fair, index) => ({
+              ...fair,
+              image_src: randomImageSources[index],
+            }));
+
+          setBanners(bannerData);
+        }
+      } catch (error) {
+        console.error("Error fetching banner fairs:", error);
+      }
+    };
+
+    fetchBanners();
+  }, []);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -33,19 +70,6 @@ export default function Home() {
     fetchCities();
   }, [currentPage]);
 
-  // 슬라이더 설정
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: true,
-    adaptiveHeight: true,
-  };
-
   // 지역별로 데이터 필터링 (category1 기준으로 필터링)
   const regions = ["서울", "부산"];
   const filteredFairs = regions.map((region) =>
@@ -55,15 +79,7 @@ export default function Home() {
   return (
     <div>
       {/* 배너 슬라이더 섹션 */}
-      <section className="relative overflow-hidden">
-        <Slider {...sliderSettings}>
-          {fairs.length > 0 ? (
-            fairs.map((fair) => <FairSlide key={fair.id} fair={fair} />)
-          ) : (
-            <EmptySlide />
-          )}
-        </Slider>
-      </section>
+      <Banner banners={banners} />
 
       {/* 지역별 웨딩 박람회 섹션 */}
       {filteredFairs.map((fairsInRegion, index) => (
