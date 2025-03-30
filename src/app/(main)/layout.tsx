@@ -48,12 +48,15 @@ export default function MainLayout({
       {/* 헤더 */}
       <header className="sticky top-0 z-40 w-full bg-white shadow">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            {/* 로고 */}
+          {/* 로고 섹션 */}
+          <div className="flex items-center justify-start py-4">
             <Link href="/" className="flex-shrink-0">
               <h1 className="text-2xl md:text-3xl font-bold">THEWEDDING</h1>
             </Link>
+          </div>
 
+          {/* 메뉴 섹션 */}
+          <div className="flex items-center justify-between h-12">
             {/* 데스크탑 네비게이션 */}
             <nav className="hidden md:flex items-center space-x-6">
               {mainCities.map((city) => (
@@ -69,13 +72,13 @@ export default function MainLayout({
 
             {/* 검색 및 모바일 메뉴 버튼 */}
             <div className="flex items-center space-x-2">
-              <button
+              {/* <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 rounded-full hover:bg-gray-100"
                 aria-label="검색"
               >
                 <Search className="w-5 h-5" />
-              </button>
+              </button> */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 md:hidden rounded-full hover:bg-gray-100"
