@@ -37,7 +37,17 @@ export interface City {
 
 export type CityResponse = City[];
 
-export type SubCityResponse = City[];
+export interface SubCityResponse {
+  sub_cities: City[];
+}
+
+export interface AllSubCitiesResponse {
+  [key: number]: {
+    id: number;
+    name: string;
+    sub_cities: City[];
+  };
+}
 
 // 요청 파라미터 타입 정의
 export interface FairsParams {

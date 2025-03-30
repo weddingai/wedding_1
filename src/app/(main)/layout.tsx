@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { City, getMainCities, getSubCities } from "@/api";
+import { City, getMainCities, getAllSubCities } from "@/api";
 import classNames from "classnames";
 
 export default function MainLayout({
@@ -21,25 +21,36 @@ export default function MainLayout({
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
         // 메인 도시 가져오기
         const citiesData = await getMainCities();
         setMainCities(citiesData);
 
-        // 모든 메인 도시에 대한 서브 도시 데이터 가져오기
+        // 한 번의 API 호출로 모든 서브 카테고리 데이터를 가져옵니다
+        const allSubCitiesData = await getAllSubCities();
+
+        // 메인 도시 배열 생성 (정렬을 위해)
+        const mainCitiesArray: City[] = [];
         const subCitiesData: { [key: number]: City[] } = {};
-        for (const city of citiesData) {
-          try {
-            const subCityData = await getSubCities(city.id.toString());
-            subCitiesData[city.id] = subCityData.sub_cities;
-          } catch (error) {
-            console.error(`Error fetching sub cities for ${city.id}:`, error);
-            subCitiesData[city.id] = []; // 에러 발생 시 빈 배열로 설정
-          }
+
+        // 응답 데이터를 순회하며 필요한 형태로 변환
+        for (const [cityIdStr, cityData] of Object.entries(allSubCitiesData)) {
+          const cityId = parseInt(cityIdStr);
+
+          // 메인 도시 배열에 추가
+          mainCitiesArray.push({
+            id: cityId,
+            name: cityData.name,
+          });
+
+          // 서브 도시 데이터 설정
+          subCitiesData[cityId] = cityData.sub_cities;
         }
 
+        setMainCities(mainCitiesArray);
         setSubCities(subCitiesData);
       } catch (error) {
-        console.error("Error fetching cities data:", error);
+        console.error("데이터 가져오기 오류:", error);
       } finally {
         setIsLoading(false);
       }
