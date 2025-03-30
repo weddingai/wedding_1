@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { City, getMainCities } from "@/api";
+import { City, getMainCities, getSubCities } from "@/api";
+import classNames from "classnames";
 
 export default function MainLayout({
   children,
@@ -11,25 +12,58 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mainCities, setMainCities] = useState<City[]>([]);
+  const [subCities, setSubCities] = useState<{ [key: number]: City[] }>({});
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMainCities = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
+        // 메인 도시 가져오기
         const citiesData = await getMainCities();
         setMainCities(citiesData);
+
+        // 모든 메인 도시에 대한 서브 도시 데이터 가져오기
+        const subCitiesData: { [key: number]: City[] } = {};
+        for (const city of citiesData) {
+          try {
+            const subCityData = await getSubCities(city.id.toString());
+            subCitiesData[city.id] = subCityData.sub_cities;
+          } catch (error) {
+            console.error(`Error fetching sub cities for ${city.id}:`, error);
+            subCitiesData[city.id] = []; // 에러 발생 시 빈 배열로 설정
+          }
+        }
+
+        setSubCities(subCitiesData);
       } catch (error) {
-        console.error("Error fetching main cities:", error);
+        console.error("Error fetching cities data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchMainCities();
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log(subCities);
+  }, [subCities]);
+
+  const handleMouseEnter = (cityId: number) => {
+    setActiveDropdown(cityId);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveDropdown(null);
+  };
 
   const handleCityClick = (cityId: number) => {
     // 모바일 메뉴가 열려있으면 닫기
     setIsMenuOpen(false);
+    setActiveDropdown(null);
 
     // 약간의 지연을 두어 메뉴 닫힘 애니메이션이 완료되도록 함
     setTimeout(() => {
@@ -50,6 +84,12 @@ export default function MainLayout({
     }, 100);
   };
 
+  const handleSubCityClick = (subCityId: number) => {
+    // 서브 카테고리 클릭 시 필요한 처리 추가
+    setActiveDropdown(null);
+    // 여기에 서브 카테고리 페이지로 이동하는 로직을 추가할 수 있습니다
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* 헤더 */}
@@ -63,17 +103,52 @@ export default function MainLayout({
           </div>
 
           {/* 메뉴 섹션 */}
-          <div className="flex items-center justify-between h-12">
+          <div className="flex items-center justify-between h-12 border-b">
             {/* 데스크탑 네비게이션 */}
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden md:flex h-full items-center space-x-6 relative">
               {mainCities.map((city) => (
-                <button
+                <div
                   key={city.id}
-                  onClick={() => handleCityClick(city.id)}
-                  className="text-sm text-gray-700 hover:text-black"
+                  className="relative h-full"
+                  onMouseEnter={() => handleMouseEnter(city.id)}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  {city.name}
-                </button>
+                  <button
+                    onClick={() => handleCityClick(city.id)}
+                    className={classNames(
+                      "h-full text-sm text-gray-700 hover:text-black",
+                      activeDropdown === city.id && "border-b-4 border-black"
+                    )}
+                  >
+                    {city.name}
+                  </button>
+
+                  {/* 드롭다운 메뉴 */}
+                  {activeDropdown === city.id && (
+                    <div className="absolute left-0 w-48 bg-white shadow-lg rounded-b-md py-2 z-10">
+                      {isLoading ? (
+                        <div className="px-4 py-2 text-sm text-gray-500">
+                          로딩 중...
+                        </div>
+                      ) : subCities[city.id] &&
+                        subCities[city.id].length > 0 ? (
+                        subCities[city.id].map((subCity) => (
+                          <button
+                            key={subCity.id}
+                            onClick={() => handleSubCityClick(subCity.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            {subCity.name}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-sm text-gray-500">
+                          현재 지역에서 열리는 박람회가 없습니다
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
             </nav>
 
@@ -100,40 +175,17 @@ export default function MainLayout({
           {isMenuOpen && (
             <nav className="md:hidden py-4 px-4 space-y-2 bg-white border-t">
               {mainCities.map((city) => (
-                <button
-                  key={city.id}
-                  onClick={() => handleCityClick(city.id)}
-                  className="block w-full text-left py-2 text-gray-700 hover:text-black"
-                >
-                  {city.name}
-                </button>
+                <div key={city.id}>
+                  <button
+                    onClick={() => handleCityClick(city.id)}
+                    className="block w-full text-left py-2 text-gray-700 hover:text-black"
+                  >
+                    {city.name}
+                  </button>
+                </div>
               ))}
             </nav>
           )}
-
-          {/* 검색창 */}
-          {isSearchOpen && (
-            <div className="md:hidden border-t">
-              <div className="container mx-auto px-4 py-3">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="디자이너 서울 웨딩박람회"
-                    className="w-full py-2 pl-4 pr-10 border rounded-md"
-                    onBlur={() => setIsSearchOpen(false)}
-                  />
-                  <button
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    aria-label="검색하기"
-                  >
-                    <Search className="w-5 h-5 text-gray-400" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="border-b"></div>
         </div>
       </header>
 
