@@ -37,7 +37,7 @@ export const FairCard = ({ fair }: FairCardProps) => {
         <div className="mb-2">
           {fair.start_date.split("T")[0]} ~ {fair.end_date.split("T")[0]}
         </div>
-        <p className="text-sm text-gray-700 mb-3 min-h-[3rem] line-clamp-2 overflow-hidden">
+        <p className="text-sm text-gray-700 mb-3 min-h-[2.5rem] line-clamp-2 overflow-hidden">
           {fair.address}
         </p>
         <div className="bg-amber-50 text-amber-800 text-sm px-4 py-2 rounded-md">

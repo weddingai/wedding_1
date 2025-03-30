@@ -30,19 +30,14 @@ export interface FairsResponse {
   currentPage: string;
 }
 
-export interface CityResponse {
-  cities: {
-    id: string;
-    name: string;
-  }[];
+export interface City {
+  id: number;
+  name: string;
 }
 
-export interface SubCityResponse {
-  sub_cities: {
-    id: string;
-    name: string;
-  }[];
-}
+export type CityResponse = City[];
+
+export type SubCityResponse = City[];
 
 // 요청 파라미터 타입 정의
 export interface FairsParams {
