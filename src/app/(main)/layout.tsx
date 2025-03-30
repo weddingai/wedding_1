@@ -28,19 +28,26 @@ export default function MainLayout({
   }, []);
 
   const handleCityClick = (cityId: number) => {
-    const element = document.getElementById(`city-${cityId}`);
-    if (element) {
-      const headerOffset = 80; // 헤더 높이
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
+    // 모바일 메뉴가 열려있으면 닫기
     setIsMenuOpen(false);
+
+    // 약간의 지연을 두어 메뉴 닫힘 애니메이션이 완료되도록 함
+    setTimeout(() => {
+      const element = document.getElementById(`city-${cityId}`);
+      if (element) {
+        // 헤더 높이를 디바이스에 따라 조정
+        const headerOffset = window.innerWidth < 768 ? 130 : 80;
+
+        // 모바일에서는 window.pageYOffset 대신 window.scrollY 사용
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -138,11 +145,7 @@ export default function MainLayout({
         <div className="container mx-auto px-4">
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-2">마이 웨딩</h2>
-            <p className="text-gray-400 text-sm">
-              우리 결혼해요! 마이웨?
-              <br />
-              상담문의: 02-123-4567
-            </p>
+            <p className="text-gray-400 text-sm">우리 결혼해요! 마이웨딩</p>
           </div>
 
           <div className="flex flex-wrap justify-between border-t border-gray-700 pt-6 text-xs text-gray-400">
