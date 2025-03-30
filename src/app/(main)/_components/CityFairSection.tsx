@@ -66,7 +66,7 @@ export default function CityFairSection({ city }: CityFairSectionProps) {
 
   if (error) {
     return (
-      <section className="py-10">
+      <section id={`city-${city.id}`} className="py-10">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6 pb-2 border-b">
             {city.name} 웨딩 박람회
@@ -78,7 +78,7 @@ export default function CityFairSection({ city }: CityFairSectionProps) {
   }
 
   return (
-    <section className="py-10">
+    <section id={`city-${city.id}`} className="py-10">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b">
           {city.name} 웨딩 박람회

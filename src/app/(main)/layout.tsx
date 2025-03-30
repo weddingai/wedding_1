@@ -1,21 +1,9 @@
 "use client";
 
 import Link from "next/link";
-// import Image from "next/image";
 import { Search, Menu } from "lucide-react";
-import { useState } from "react";
-
-const mainNavItems = [
-  { title: "서울", href: "/seoul" },
-  { title: "경기", href: "/gyeonggi" },
-  { title: "인천", href: "/incheon" },
-  { title: "부산", href: "/busan" },
-  { title: "광주", href: "/gwangju" },
-  { title: "전라", href: "/jeolla" },
-  { title: "경상", href: "/gyeongsang" },
-  { title: "제주", href: "/jeju" },
-  { title: "기타", href: "/others" },
-];
+import { useState, useEffect } from "react";
+import { City, getMainCities } from "@/api";
 
 export default function MainLayout({
   children,
@@ -24,6 +12,36 @@ export default function MainLayout({
 }>) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mainCities, setMainCities] = useState<City[]>([]);
+
+  useEffect(() => {
+    const fetchMainCities = async () => {
+      try {
+        const citiesData = await getMainCities();
+        setMainCities(citiesData);
+      } catch (error) {
+        console.error("Error fetching main cities:", error);
+      }
+    };
+
+    fetchMainCities();
+  }, []);
+
+  const handleCityClick = (cityId: number) => {
+    const element = document.getElementById(`city-${cityId}`);
+    if (element) {
+      const headerOffset = 80; // 헤더 높이
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+    setIsMenuOpen(false);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -38,14 +56,14 @@ export default function MainLayout({
 
             {/* 데스크탑 네비게이션 */}
             <nav className="hidden md:flex items-center space-x-6">
-              {mainNavItems.map((item) => (
-                <Link
-                  key={item.title}
-                  href={item.href}
+              {mainCities.map((city) => (
+                <button
+                  key={city.id}
+                  onClick={() => handleCityClick(city.id)}
                   className="text-sm text-gray-700 hover:text-black"
                 >
-                  {item.title}
-                </Link>
+                  {city.name}
+                </button>
               ))}
             </nav>
 
@@ -71,15 +89,14 @@ export default function MainLayout({
           {/* 모바일 메뉴 */}
           {isMenuOpen && (
             <nav className="md:hidden py-4 px-4 space-y-2 bg-white border-t">
-              {mainNavItems.map((item) => (
-                <Link
-                  key={item.title}
-                  href={item.href}
-                  className="block py-2 text-gray-700 hover:text-black"
-                  onClick={() => setIsMenuOpen(false)}
+              {mainCities.map((city) => (
+                <button
+                  key={city.id}
+                  onClick={() => handleCityClick(city.id)}
+                  className="block w-full text-left py-2 text-gray-700 hover:text-black"
                 >
-                  {item.title}
-                </Link>
+                  {city.name}
+                </button>
               ))}
             </nav>
           )}
