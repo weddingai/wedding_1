@@ -1,9 +1,12 @@
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { BannerInfo } from "@/api";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getMainCategoryFairs, BannerInfo } from "@/api";
 import { FairSlide, EmptySlide } from "@/components";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import "@/styles/slickStyle.css";
 
 // 커스텀 화살표 컴포넌트 타입 정의
@@ -31,11 +34,47 @@ const NextArrow = (props: ArrowProps) => {
   );
 };
 
-interface BannerProps {
-  banners: BannerInfo[];
-}
+function Banner() {
+  const [banners, setBanners] = useState<BannerInfo[]>([]);
 
-export default function Banner({ banners }: BannerProps) {
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const params = {
+          main: "서울",
+          sub: "",
+          type: "",
+          page: "1",
+          size: "3",
+        };
+        const data = await getMainCategoryFairs(params);
+        const preBanners = data.fairs;
+
+        if (preBanners && preBanners.length > 0) {
+          // 랜덤 이미지 소스 생성
+          const randomImageSources = Array.from(
+            { length: 6 },
+            (_, i) => `/images/Banner_${i + 1}.jpeg`
+          ).sort(() => Math.random() - 0.5);
+
+          // 페어 데이터의 첫 3개를 가져와서 이미지 소스만 랜덤으로 변경
+          const bannerData: BannerInfo[] = preBanners
+            .slice(0, 3)
+            .map((fair, index) => ({
+              ...fair,
+              image_src: randomImageSources[index],
+            }));
+
+          setBanners(bannerData);
+        }
+      } catch (error) {
+        console.error("Error fetching banner fairs:", error);
+      }
+    };
+
+    fetchBanners();
+  }, []);
+
   // 슬라이더 설정
   const sliderSettings = {
     dots: true,
@@ -63,3 +102,5 @@ export default function Banner({ banners }: BannerProps) {
     </section>
   );
 }
+
+export default Banner;
