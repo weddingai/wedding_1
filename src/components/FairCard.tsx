@@ -31,7 +31,7 @@ export const FairCard = ({ fair }: FairCardProps) => {
           </div>
         </div>
         <div className="text-sm text-gray-500 mb-1">
-          {fair.category1} &lt; {fair.category2}
+          {fair.category1} &gt; {fair.category2}
         </div>
         <h3 className="text-xl font-bold mb-2">{fair.title}</h3>
         <div className="mb-2">
