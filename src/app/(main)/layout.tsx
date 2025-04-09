@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { City, getMainCities, getAllSubCities } from "@/api";
 import classNames from "classnames";
 
@@ -11,6 +12,7 @@ export default function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mainCities, setMainCities] = useState<City[]>([]);
   const [subCities, setSubCities] = useState<{ [key: number]: City[] }>({});
@@ -59,10 +61,6 @@ export default function MainLayout({
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log(subCities);
-  }, [subCities]);
-
   const handleMouseEnter = (cityId: number) => {
     setActiveDropdown(cityId);
   };
@@ -95,10 +93,25 @@ export default function MainLayout({
     }, 100);
   };
 
-  const handleSubCityClick = (subCityId: number) => {
-    // 서브 카테고리 클릭 시 필요한 처리 추가
+  const handleSubCityClick = (mainCityId: number, subCityId: number) => {
+    // 활성 드롭다운 닫기
     setActiveDropdown(null);
-    // 여기에 서브 카테고리 페이지로 이동하는 로직을 추가할 수 있습니다
+
+    // 필요한 데이터 찾기
+    const mainCity = mainCities.find((city) => city.id === mainCityId);
+    const subCity = subCities[mainCityId]?.find(
+      (city) => city.id === subCityId
+    );
+
+    if (!mainCity || !subCity) {
+      console.error("카테고리 정보를 찾을 수 없습니다.");
+      return;
+    }
+
+    // 서브 카테고리 페이지로 이동
+    router.push(
+      `/detail?main=${mainCity.name}&sub=${subCity.name}&mainName=${mainCity.name}&subName=${subCity.name}`
+    );
   };
 
   return (
@@ -114,9 +127,9 @@ export default function MainLayout({
           </div>
 
           {/* 메뉴 섹션 */}
-          <div className="flex items-center justify-between h-12 border-b">
+          <div className="flex items-center justify-between h-12 border-b relative">
             {/* 데스크탑 네비게이션 */}
-            <nav className="hidden md:flex h-full items-center space-x-6 relative">
+            <nav className="hidden md:flex h-full items-center space-x-6">
               {mainCities.map((city) => (
                 <div
                   key={city.id}
@@ -136,7 +149,7 @@ export default function MainLayout({
 
                   {/* 드롭다운 메뉴 */}
                   {activeDropdown === city.id && (
-                    <div className="absolute left-0 w-48 bg-white shadow-lg rounded-b-md py-2 z-10">
+                    <div className="absolute left-0 top-full w-48 bg-white shadow-lg rounded-b-md py-2 z-10">
                       {isLoading ? (
                         <div className="px-4 py-2 text-sm text-gray-500">
                           로딩 중...
@@ -146,7 +159,9 @@ export default function MainLayout({
                         subCities[city.id].map((subCity) => (
                           <button
                             key={subCity.id}
-                            onClick={() => handleSubCityClick(subCity.id)}
+                            onClick={() =>
+                              handleSubCityClick(city.id, subCity.id)
+                            }
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           >
                             {subCity.name}
@@ -163,15 +178,8 @@ export default function MainLayout({
               ))}
             </nav>
 
-            {/* 검색 및 모바일 메뉴 버튼 */}
+            {/* 모바일 메뉴 버튼 */}
             <div className="flex items-center space-x-2">
-              {/* <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 rounded-full hover:bg-gray-100"
-                aria-label="검색"
-              >
-                <Search className="w-5 h-5" />
-              </button> */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 md:hidden rounded-full hover:bg-gray-100"
