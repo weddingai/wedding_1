@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { searchFairs } from "@/api";
+import Image from "next/image";
+import { searchFairs, Fair } from "@/api";
 import { Calendar, MapPin } from "lucide-react";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Fair[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,7 +55,7 @@ export default function SearchPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-2">검색 결과</h1>
       <p className="text-gray-600 mb-6">
-        "{query}"에 대한 검색 결과 {totalCount}건
+        &ldquo;{query}&rdquo;에 대한 검색 결과 {totalCount}건
       </p>
 
       {isLoading ? (
@@ -74,10 +75,12 @@ export default function SearchPage() {
                 <div className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="h-48 bg-gray-200 relative">
                     {fair.image_url ? (
-                      <img
+                      <Image
                         src={fair.image_url}
                         alt={fair.title}
                         className="w-full h-full object-cover"
+                        width={500}
+                        height={300}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400">
