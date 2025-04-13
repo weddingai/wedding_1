@@ -88,7 +88,7 @@ export default function MainLayout({
       const element = document.getElementById(`city-${cityId}`);
       if (element) {
         // 헤더 높이를 디바이스에 따라 조정
-        const headerOffset = window.innerWidth < 768 ? 130 : 80;
+        const headerOffset = window.innerWidth < 768 ? 120 : 96;
 
         // 모바일에서는 window.pageYOffset 대신 window.scrollY 사용
         const elementPosition = element.getBoundingClientRect().top;
@@ -127,6 +127,8 @@ export default function MainLayout({
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setSearchQuery("");
+    setIsMenuOpen(false);
     if (!searchQuery.trim()) return;
 
     // 검색 결과 페이지로 이동
