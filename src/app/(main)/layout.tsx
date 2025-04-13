@@ -17,6 +17,7 @@ export default function MainLayout({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mainCities, setMainCities] = useState<City[]>([]);
   const [subCities, setSubCities] = useState<{ [key: number]: City[] }>({});
+  const [expandedCity, setExpandedCity] = useState<number | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -105,6 +106,9 @@ export default function MainLayout({
   const handleSubCityClick = (mainCityId: number, subCityId: number) => {
     // 활성 드롭다운 닫기
     setActiveDropdown(null);
+    // 모바일
+    setIsMenuOpen(false);
+    setExpandedCity(null);
 
     // 필요한 데이터 찾기
     const mainCity = mainCities.find((city) => city.id === mainCityId);
@@ -133,6 +137,10 @@ export default function MainLayout({
 
     // 검색 결과 페이지로 이동
     router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+  };
+
+  const handleMobileMenuClick = (cityId: number) => {
+    setExpandedCity(expandedCity === cityId ? null : cityId);
   };
 
   return (
@@ -237,7 +245,7 @@ export default function MainLayout({
           {isMenuOpen && (
             <nav className="md:hidden py-4 px-4 space-y-2 bg-white border-t">
               <div className="relative flex items-center flex-grow md:ml-8">
-                <form onSubmit={handleSearch} className="w-full flex">
+                <form onSubmit={handleSearch} className="w-full flex mb-4">
                   <div className="relative w-full">
                     <input
                       type="text"
@@ -257,13 +265,46 @@ export default function MainLayout({
                 </form>
               </div>
               {mainCities.map((city) => (
-                <div key={city.id}>
+                <div
+                  key={city.id}
+                  className="border-b border-gray-100 last:border-b-0"
+                >
                   <button
-                    onClick={() => handleCityClick(city.id)}
-                    className="block w-full text-left py-2 text-gray-700 hover:text-black"
+                    onClick={() => handleMobileMenuClick(city.id)}
+                    className="flex items-center justify-between w-full py-3 px-2 text-gray-700 hover:text-black"
                   >
-                    {city.name}
+                    <span>{city.name}</span>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        expandedCity === city.id ? "transform rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                   </button>
+                  {expandedCity === city.id && subCities[city.id] && (
+                    <div className="pl-4 py-2 bg-gray-50">
+                      {subCities[city.id].map((subCity) => (
+                        <button
+                          key={subCity.id}
+                          onClick={() =>
+                            handleSubCityClick(city.id, subCity.id)
+                          }
+                          className="block w-full text-left py-2 px-2 text-gray-600 hover:text-black text-sm"
+                        >
+                          {subCity.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </nav>
