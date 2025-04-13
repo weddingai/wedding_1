@@ -1,18 +1,16 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, Calendar, Search, LogOut } from "lucide-react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 // 관리자 메뉴 아이템
 const adminMenuItems = [
-  { title: "대시보드", href: "/admin", icon: LayoutDashboard },
-  { title: "박람회 관리", href: "/admin/exhibitions", icon: Calendar },
-  { title: "사용자 관리", href: "/admin/users", icon: Users },
-  { title: "설정", href: "/admin/settings", icon: Settings },
+  { title: "대시보드", href: "/admin/dashboard", icon: <LayoutDashboard /> },
+  { title: "SEO 관리", href: "/admin/seo", icon: <Search /> },
+  { title: "박람회 관리", href: "/admin/fairs", icon: <Calendar /> },
 ];
 
 export default function AdminLayout({
@@ -20,89 +18,124 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // 루트 페이지에서는 인증 체크를 하지 않음
+      if (pathname === "/admin") {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+          router.push("/admin");
+          return;
+        }
+
+        // 로그인된 상태에서 루트 페이지 접근 시 대시보드로 리다이렉트
+        if (pathname === "/admin" && session) {
+          router.push("/admin/dashboard");
+          return;
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router, supabase.auth, pathname]);
+
+  const isActive = (path: string) => {
+    return pathname === path;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push("/admin");
+      router.refresh();
+    } catch (error) {
+      console.error("로그아웃 중 오류가 발생했습니다:", error);
+    }
+  };
+
+  // 로딩 중 상태 표시
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // 루트 페이지일 경우 레이아웃을 적용하지 않음
+  if (pathname === "/admin") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="flex h-screen">
-        {/* 사이드바 */}
-        <aside className="hidden md:flex w-64 flex-col bg-white border-r">
-          <div className="p-4 border-b">
-            <Link href="/admin" className="flex items-center">
+      {/* 헤더 */}
+      <header className="bg-white shadow">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/admin/dashboard" className="flex-shrink-0">
               <h1 className="text-xl font-bold">THEWEDDING</h1>
-              <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
-                Admin
-              </span>
             </Link>
-          </div>
-
-          <nav className="flex-1 p-4">
-            <ul className="space-y-1">
-              {adminMenuItems.map((item) => (
-                <li key={item.title}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    <item.icon className="w-5 h-5 mr-3" />
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="p-4 border-t">
-            <button className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md w-full">
-              <LogOut className="w-5 h-5 mr-3" />
-              로그아웃
-            </button>
-          </div>
-        </aside>
-
-        {/* 모바일 헤더 */}
-        <div className="md:hidden fixed top-0 left-0 right-0 bg-white border-b z-10">
-          <div className="flex items-center justify-between p-4">
-            <Link href="/admin" className="flex items-center">
-              <h1 className="text-xl font-bold">THEWEDDING</h1>
-              <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
-                Admin
-              </span>
-            </Link>
-            <button className="p-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            </button>
           </div>
         </div>
+      </header>
 
-        {/* 메인 콘텐츠 */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 md:pt-4">
-          {/* 데스크톱 헤더 */}
-          <div className="hidden md:flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">대시보드</h1>
-            <div className="flex items-center">
-              <span className="bg-gray-200 px-3 py-1 rounded-full text-sm mr-2">
-                관리자
-              </span>
-              <span className="font-medium">홍길동</span>
-            </div>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex gap-6">
+          {/* 사이드바 */}
+          <aside className="w-64 bg-white rounded-lg shadow p-4">
+            <nav className="flex flex-col h-full">
+              <div className="flex-1 space-y-1">
+                {adminMenuItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`block px-4 py-2 rounded-md ${
+                      isActive(item.href)
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {item.icon}
+                      {item.title}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+              <div className="pt-4 mt-4 border-t">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-md"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>로그아웃</span>
+                </button>
+              </div>
+            </nav>
+          </aside>
 
-          {/* 컨텐츠 영역 */}
-          <div className="mt-6 md:mt-0">{children}</div>
-        </main>
+          {/* 메인 콘텐츠 */}
+          <main className="flex-1 bg-white rounded-lg shadow p-6">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );
