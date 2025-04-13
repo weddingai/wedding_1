@@ -62,3 +62,19 @@ export interface AdminFairsResponse {
   active?: string;
   expired?: string;
 }
+
+// 박람회 검색 요청 파라미터
+export interface SearchFairsParams {
+  search: string;
+  type?: string;
+  page?: string;
+  size?: string;
+}
+
+// 박람회 응답 데이터
+export interface FairsResponse {
+  fairs: Fair[];
+  totalPages: string;
+  currentPage: string;
+  totalCount: number;
+}

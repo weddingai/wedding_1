@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { City, getMainCities, getAllSubCities } from "@/api";
 import classNames from "classnames";
 
@@ -13,11 +13,20 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mainCities, setMainCities] = useState<City[]>([]);
   const [subCities, setSubCities] = useState<{ [key: number]: City[] }>({});
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // 검색 관련 상태
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // 페이지가 변경될 때마다 검색어 초기화
+  useEffect(() => {
+    setSearchQuery("");
+  }, [pathname]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,6 +123,16 @@ export default function MainLayout({
     );
   };
 
+  // 검색 처리 함수
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!searchQuery.trim()) return;
+
+    // 검색 결과 페이지로 이동
+    router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* 헤더 */}
@@ -127,9 +146,9 @@ export default function MainLayout({
           </div>
 
           {/* 메뉴 섹션 */}
-          <div className="flex items-center justify-between h-12 border-b relative">
+          <div className="flex items-center justify-between h-16 border-b relative">
             {/* 데스크탑 네비게이션 */}
-            <nav className="hidden md:flex h-full items-center space-x-6">
+            <nav className="hidden md:flex h-full items-center space-x-1 flex-shrink-0">
               {mainCities.map((city) => (
                 <div
                   key={city.id}
@@ -140,7 +159,7 @@ export default function MainLayout({
                   <button
                     onClick={() => handleCityClick(city.id)}
                     className={classNames(
-                      "h-full text-sm text-gray-700 hover:text-black",
+                      "h-full text-sm text-gray-700 px-2  whitespace-nowrap hover:text-black",
                       activeDropdown === city.id && "border-b-4 border-black"
                     )}
                   >
@@ -179,7 +198,7 @@ export default function MainLayout({
             </nav>
 
             {/* 모바일 메뉴 버튼 */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center ml-2 flex-shrink-0">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 md:hidden rounded-full hover:bg-gray-100"
@@ -188,11 +207,53 @@ export default function MainLayout({
                 <Menu className="w-5 h-5" />
               </button>
             </div>
+
+            {/* 검색창 */}
+            <div className="relative hidden md:flex items-center flex-grow ml-4 md:ml-8 max-w-sm">
+              <form onSubmit={handleSearch} className="w-full flex">
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="박람회 이름으로 검색"
+                    className="w-full py-2 px-4 pr-10 border-b-2 border-gray-200 focus:border-gray-500 focus:outline-none placeholder:text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-0 top-1/2 transform -translate-y-1/2 px-3 text-gray-600"
+                    aria-label="검색"
+                  >
+                    <Search className="h-5 w-5" />
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
 
           {/* 모바일 메뉴 */}
           {isMenuOpen && (
             <nav className="md:hidden py-4 px-4 space-y-2 bg-white border-t">
+              <div className="relative flex items-center flex-grow md:ml-8">
+                <form onSubmit={handleSearch} className="w-full flex">
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="박람회 이름으로 검색"
+                      className="w-full py-2 px-4 pr-10 border-b-2 border-gray-200 focus:border-gray-500 focus:outline-none placeholder:text-sm"
+                    />
+                    <button
+                      type="submit"
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 px-3 text-gray-600"
+                      aria-label="검색"
+                    >
+                      <Search className="h-5 w-5" />
+                    </button>
+                  </div>
+                </form>
+              </div>
               {mainCities.map((city) => (
                 <div key={city.id}>
                   <button
