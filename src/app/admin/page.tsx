@@ -18,7 +18,7 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -27,7 +27,7 @@ export default function AdminLogin() {
 
       router.push("/admin/dashboard");
       router.refresh();
-    } catch (error) {
+    } catch {
       setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     } finally {
       setIsLoading(false);
