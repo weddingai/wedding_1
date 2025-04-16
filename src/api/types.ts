@@ -78,3 +78,19 @@ export interface FairsResponse {
   currentPage: string;
   totalCount: number;
 }
+
+// 박람회 추가 폼 데이터 타입
+export interface FairFormData {
+  title: string;
+  category1: string;
+  category2: string;
+  start_date: string;
+  end_date: string;
+  redirect_url: string;
+  address: string;
+  description: string;
+  promotion: string;
+  image_url: string;
+  hash: string;
+  type: string;
+}
