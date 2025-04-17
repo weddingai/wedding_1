@@ -63,6 +63,15 @@ export interface AdminFairsResponse {
   expired?: string;
 }
 
+// 관리자 박람회 목록 요청 파라미터
+export interface AdminFairsListParams {
+  search?: string; // 검색어 (선택)
+  status?: string; // 상태 필터 (선택, 기본값: "all")
+  category1?: string; // 메인 카테고리 (선택, 기본값: "전체")
+  page?: string; // 페이지 번호 (선택, 기본값: "1")
+  size?: string; // 페이지 크기 (선택, 기본값: "10")
+}
+
 // 박람회 검색 요청 파라미터
 export interface SearchFairsParams {
   search: string;

@@ -3,6 +3,8 @@ import {
   AdminFairsResponse,
   FairFormData,
   AllSubCitiesResponse,
+  AdminFairsListParams,
+  FairsResponse,
 } from "./types";
 
 const API_BASE_URL =
@@ -92,4 +94,22 @@ export const deleteFair = async (
   }
 
   return response.json();
+};
+
+/**
+ * 관리자 박람회 목록을 가져오는 함수
+ */
+export const getAdminFairsList = async (
+  params: AdminFairsListParams
+): Promise<FairsResponse> => {
+  try {
+    const response = await apiClient.post("/admin/fairs/list", params);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "관리자 박람회 목록을 가져오는 중 오류가 발생했습니다:",
+      error
+    );
+    throw error;
+  }
 };
