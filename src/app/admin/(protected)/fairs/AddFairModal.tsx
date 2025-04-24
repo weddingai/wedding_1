@@ -32,7 +32,6 @@ export default function AddFairModal({
     description: "",
     promotion: "",
     image_url: "",
-    hash: "",
     type: "웨딩",
   });
 
@@ -54,7 +53,6 @@ export default function AddFairModal({
       description: "",
       promotion: "",
       image_url: "",
-      hash: "",
       type: "웨딩",
     });
     onClose();
@@ -245,20 +243,6 @@ export default function AddFairModal({
                 value={formData.redirect_url}
                 onChange={(e) =>
                   setFormData({ ...formData, redirect_url: e.target.value })
-                }
-                className="w-full px-3 py-2 border rounded-md"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                해시
-              </label>
-              <input
-                type="text"
-                value={formData.hash}
-                onChange={(e) =>
-                  setFormData({ ...formData, hash: e.target.value })
                 }
                 className="w-full px-3 py-2 border rounded-md"
                 required

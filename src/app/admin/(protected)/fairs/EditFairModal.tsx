@@ -221,20 +221,6 @@ export default function EditFairModal({
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                해시
-              </label>
-              <input
-                type="text"
-                value={formData.hash}
-                onChange={(e) =>
-                  setFormData({ ...formData, hash: e.target.value })
-                }
-                className="w-full px-3 py-2 border rounded-md"
-                required
-              />
-            </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 설명

@@ -100,6 +100,5 @@ export interface FairFormData {
   description: string;
   promotion: string;
   image_url: string;
-  hash: string;
   type: string;
 }
