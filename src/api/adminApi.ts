@@ -7,9 +7,6 @@ import {
   FairsResponse,
 } from "./types";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
-
 /**
  * 활성화된 박람회 수를 가져오는 함수
  */
@@ -82,18 +79,13 @@ export const updateFair = async (
 export const deleteFair = async (
   fairId: string
 ): Promise<{ status: string; message: string }> => {
-  const response = await fetch(`${API_BASE_URL}/admin/fairs/${fairId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("박람회 삭제에 실패했습니다.");
+  try {
+    const response = await apiClient.delete(`/admin/fairs/${fairId}`);
+    return response.data;
+  } catch (error) {
+    console.error("박람회 삭제 중 오류가 발생했습니다:", error);
+    throw error;
   }
-
-  return response.json();
 };
 
 /**
