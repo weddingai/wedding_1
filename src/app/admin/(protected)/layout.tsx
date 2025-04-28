@@ -8,7 +8,16 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 // 관리자 메뉴 아이템
 const adminMenuItems = [
   { title: "대시보드", href: "/admin/dashboard", icon: <LayoutDashboard /> },
-  { title: "SEO 관리", href: "/admin/seo", icon: <Search /> },
+  {
+    title: "SEO 관리",
+    href: "/admin/seo/meta",
+    icon: <Search />,
+    subItems: [
+      { title: "메타 태그", href: "/admin/seo/meta" },
+      { title: "구조화 데이터", href: "/admin/seo/structured-data" },
+      { title: "사이트맵", href: "/admin/seo/sitemap" },
+    ],
+  },
   { title: "박람회 관리", href: "/admin/fairs", icon: <Calendar /> },
 ];
 
@@ -54,20 +63,45 @@ export default function ProtectedLayout({
             <nav className="flex flex-col flex-1 p-4 overflow-y-auto">
               <div className="flex-1 space-y-1">
                 {adminMenuItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`block px-4 py-2 rounded-md ${
-                      isActive(item.href)
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      {item.icon}
-                      {item.title}
-                    </span>
-                  </Link>
+                  <div key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`block px-4 py-2 rounded-md ${
+                        (
+                          item.title === "SEO 관리"
+                            ? pathname.startsWith("/admin/seo")
+                            : isActive(item.href)
+                        )
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        {item.icon}
+                        {item.title}
+                      </span>
+                    </Link>
+                    {item.subItems && (
+                      <div className="ml-6 mt-1 space-y-1">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            className={`block px-4 py-2 rounded-md text-sm ${
+                              isActive(subItem.href) ||
+                              (subItem.href === "/admin/seo/meta" &&
+                                (pathname === "/admin/seo" ||
+                                  pathname === "/admin/seo/meta"))
+                                ? "bg-gray-900 text-white"
+                                : "text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {subItem.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
               <div className="pt-4 mt-4 border-t">
