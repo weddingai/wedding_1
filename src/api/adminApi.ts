@@ -5,6 +5,8 @@ import {
   AllSubCitiesResponse,
   AdminFairsListParams,
   FairsResponse,
+  SitesResponse,
+  StructuredData,
 } from "./types";
 
 /**
@@ -102,6 +104,36 @@ export const getAdminFairsList = async (
       "관리자 박람회 목록을 가져오는 중 오류가 발생했습니다:",
       error
     );
+    throw error;
+  }
+};
+
+/**
+ * 사이트 목록을 가져오는 함수
+ */
+export const getSitesList = async (): Promise<SitesResponse> => {
+  try {
+    const response = await apiClient.get("/admin/sites");
+    return response.data;
+  } catch (error) {
+    console.error("사이트 목록을 가져오는 중 오류가 발생했습니다:", error);
+    throw error;
+  }
+};
+
+/**
+ * 구조화 데이터 업데이트 함수
+ */
+export const updateStructuredData = async (
+  siteId: string,
+  structured_data: StructuredData
+): Promise<void> => {
+  try {
+    await apiClient.put(`/admin/sites/${siteId}/structured-data`, {
+      structured_data,
+    });
+  } catch (error) {
+    console.error("구조화 데이터 업데이트 중 오류가 발생했습니다:", error);
     throw error;
   }
 };

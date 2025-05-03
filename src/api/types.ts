@@ -102,3 +102,32 @@ export interface FairFormData {
   image_url: string;
   type: string;
 }
+
+// tb_sites 사이트 타입 정의
+export interface Site {
+  id: string;
+  site_name: string;
+  site_url: string;
+  sitemap_xml: string | null;
+  structured_data: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SitesResponse {
+  sites: Site[];
+}
+
+export type StructuredData = {
+  "@context": string;
+  "@type": string;
+  name?: string;
+  description?: string;
+  url?: string;
+  [key: string]: string | number | boolean | null | undefined;
+};
+
+// SEO 관련 타입
+export interface SeoResponse {
+  structured_data: string;
+}
