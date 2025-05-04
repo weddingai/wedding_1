@@ -161,7 +161,7 @@ export default function StructuredDataManagement() {
               type="button"
               onClick={validateJson}
               disabled={isSaving}
-              className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200 disabled:opacity-50"
+              className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-md hover:bg-gray-300 disabled:opacity-50"
             >
               JSON 유효성 검사
             </button>
