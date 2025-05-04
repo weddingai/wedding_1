@@ -137,3 +137,18 @@ export const updateStructuredData = async (
     throw error;
   }
 };
+
+/**
+ * 사이트맵 XML을 업데이트하는 함수
+ */
+export const updateSitemapXml = async (
+  siteId: string,
+  sitemap_xml: string
+): Promise<void> => {
+  try {
+    await apiClient.put(`/admin/sites/${siteId}/sitemap`, { sitemap_xml });
+  } catch (error) {
+    console.error("사이트맵 XML 업데이트 중 오류가 발생했습니다:", error);
+    throw error;
+  }
+};
