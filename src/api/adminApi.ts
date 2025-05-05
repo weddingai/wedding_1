@@ -7,6 +7,7 @@ import {
   FairsResponse,
   SitesResponse,
   StructuredData,
+  MetaTags,
 } from "./types";
 
 /**
@@ -151,4 +152,25 @@ export const updateSitemapXml = async (
     console.error("사이트맵 XML 업데이트 중 오류가 발생했습니다:", error);
     throw error;
   }
+};
+
+/**
+ * 메타태그 조회 함수
+ */
+export const getMetaTags = async (id: number): Promise<MetaTags> => {
+  const res = await apiClient.get(`/admin/meta-tags/${id}`);
+  if (res.data?.meta) return res.data.meta;
+  throw new Error(res.data?.error || "메타태그 정보를 불러오지 못했습니다.");
+};
+
+/**
+ * 메타태그 업데이트 함수
+ */
+export const updateMetaTags = async (
+  id: number,
+  meta: MetaTags
+): Promise<MetaTags> => {
+  const res = await apiClient.put(`/admin/meta-tags/${id}`, meta);
+  if (res.data?.meta) return res.data.meta;
+  throw new Error(res.data?.error || "저장에 실패했습니다.");
 };

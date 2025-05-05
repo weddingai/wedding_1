@@ -1,5 +1,5 @@
 import apiClient from "./axios";
-import { SeoResponse } from "./types";
+import { SeoResponse, MetaTags } from "./types";
 
 /**
  * 구조화 데이터를 가져오는 함수
@@ -25,4 +25,13 @@ export const getSitemapXml = async (siteId: string): Promise<string> => {
     headers: { Accept: "application/xml" },
   });
   return response.data;
+};
+
+/**
+ * 공개용 메타태그 조회 함수
+ */
+export const getPublicMetaTags = async (id: number): Promise<MetaTags> => {
+  const res = await apiClient.get(`/seo/meta-tags/${id}`);
+  if (res.data?.meta) return res.data.meta;
+  throw new Error(res.data?.error || "메타태그 정보를 불러오지 못했습니다.");
 };

@@ -131,3 +131,18 @@ export type StructuredData = {
 export interface SeoResponse {
   structured_data: string;
 }
+
+// 메타태그 타입 정의
+export interface MetaTags {
+  id?: number;
+  site_id?: string;
+  meta_title: string;
+  meta_description: string;
+  keywords: string;
+  og_title: string;
+  og_description: string;
+  og_image: string;
+  og_url: string;
+  created_at?: string;
+  updated_at?: string;
+}
