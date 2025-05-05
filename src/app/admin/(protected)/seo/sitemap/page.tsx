@@ -73,12 +73,14 @@ export default function SitemapViewer() {
       await updateSitemapXml(selectedSite, editXml);
       setSitemapXml(editXml);
       setEditMode(false);
+      window.alert("사이트맵이 저장되었습니다.");
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError("사이트맵 저장에 실패했습니다: " + err.message);
-      } else {
-        setError("사이트맵 저장에 실패했습니다.");
-      }
+      const msg =
+        err instanceof Error
+          ? "사이트맵 저장에 실패했습니다: " + err.message
+          : "사이트맵 저장에 실패했습니다.";
+      setError(msg);
+      window.alert(msg);
     } finally {
       setSaving(false);
     }

@@ -86,7 +86,7 @@ export default function StructuredDataManagement() {
       // JSON 유효성 검사
       const parsedData = JSON.parse(jsonData);
       await updateStructuredData(selectedSite, parsedData);
-      alert("구조화 데이터가 성공적으로 저장되었습니다.");
+      alert("구조화 데이터가 저장되었습니다.");
     } catch (err) {
       if (err instanceof SyntaxError) {
         alert(

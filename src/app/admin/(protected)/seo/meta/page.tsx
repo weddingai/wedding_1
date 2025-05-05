@@ -57,7 +57,7 @@ export default function SeoManagement() {
     setError("");
     try {
       await updateMetaTags(1, meta);
-      window.alert("저장되었습니다.");
+      window.alert("메타태그 정보가 저장되었습니다.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "저장에 실패했습니다.";
       setError(msg);
