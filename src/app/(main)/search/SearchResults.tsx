@@ -97,7 +97,8 @@ export default function SearchResults() {
                     <div className="flex items-center text-gray-600">
                       <Calendar className="w-4 h-4 mr-1" />
                       <span className="text-sm">
-                        {fair.start_date} ~ {fair.end_date}
+                        {fair.start_date.split("T")[0]} ~{" "}
+                        {fair.end_date.split("T")[0]}
                       </span>
                     </div>
                     <div className="mt-3 text-sm">
