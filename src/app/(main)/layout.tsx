@@ -4,39 +4,8 @@ import Link from "next/link";
 import { Menu, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { City, getMainCities, getAllSubCities } from "@/api";
-import { getStructuredData } from "@/api/seoApi";
-import classNames from "classnames";
-import Script from "next/script";
-
-// 구조화 데이터를 가져오는 클라이언트 컴포넌트
-function StructuredDataScript() {
-  const [structuredData, setStructuredData] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchStructuredData = async () => {
-      try {
-        const { structured_data } = await getStructuredData("1");
-        setStructuredData(structured_data);
-      } catch (err) {
-        console.error("구조화 데이터 로딩 중 오류:", err);
-      }
-    };
-
-    fetchStructuredData();
-  }, []);
-
-  if (!structuredData) return null;
-
-  return (
-    <Script
-      id="structured-data"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: structuredData }}
-      strategy="afterInteractive"
-    />
-  );
-}
+import { City, getMainCities, getAllSubCities } from '@/api';
+import classNames from 'classnames';
 
 export default function MainLayout({
   children,
@@ -176,7 +145,6 @@ export default function MainLayout({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <StructuredDataScript />
       {/* 헤더 */}
       <header className="sticky top-0 z-40 w-full bg-white shadow">
         <div className="container mx-auto px-4">
@@ -201,8 +169,8 @@ export default function MainLayout({
                   <button
                     onClick={() => handleCityClick(city.id)}
                     className={classNames(
-                      "h-full text-sm text-gray-700 px-2  whitespace-nowrap hover:text-black",
-                      activeDropdown === city.id && "border-b-4 border-black"
+                      'h-full text-sm text-gray-700 px-2  whitespace-nowrap hover:text-black',
+                      activeDropdown === city.id && 'border-b-4 border-black'
                     )}
                   >
                     {city.name}
@@ -308,7 +276,7 @@ export default function MainLayout({
                     <span>{city.name}</span>
                     <svg
                       className={`w-4 h-4 transition-transform ${
-                        expandedCity === city.id ? "transform rotate-180" : ""
+                        expandedCity === city.id ? 'transform rotate-180' : ''
                       }`}
                       fill="none"
                       stroke="currentColor"
