@@ -12,7 +12,7 @@ export const FairCard = ({ fair }: FairCardProps) => {
   return (
     <div className="group">
       <a
-        href={`${fair.redirect_url}`}
+        href={`${fair.redirect_url}weddingfair365`}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -35,7 +35,7 @@ export const FairCard = ({ fair }: FairCardProps) => {
         </div>
         <h3 className="text-xl font-bold mb-2">{fair.title}</h3>
         <div className="mb-2">
-          {fair.start_date.split("T")[0]} ~ {fair.end_date.split("T")[0]}
+          {fair.start_date.split('T')[0]} ~ {fair.end_date.split('T')[0]}
         </div>
         <p className="text-sm text-gray-700 mb-3 min-h-[2.5rem] line-clamp-2 overflow-hidden">
           {fair.address}
