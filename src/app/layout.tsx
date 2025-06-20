@@ -23,6 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
         images: meta.og_image ? [meta.og_image] : [],
         url: meta.og_url,
       },
+      verification: {
+        google: meta.google_verification,
+        other: {
+          'naver-site-verification': meta.naver_verification,
+        },
+      },
     };
   } catch {
     return {
