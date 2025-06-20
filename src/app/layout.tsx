@@ -24,10 +24,10 @@ export async function generateMetadata(): Promise<Metadata> {
         url: meta.og_url,
       },
       verification: {
-        google: meta.google_verification,
-        other: {
+        google: meta.google_verification || undefined,
+        other: meta.naver_verification ? {
           'naver-site-verification': meta.naver_verification,
-        },
+        } : undefined,
       },
     };
   } catch {
