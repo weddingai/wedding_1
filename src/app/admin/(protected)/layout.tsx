@@ -16,6 +16,7 @@ const adminMenuItems = [
       { title: "메타 태그", href: "/admin/seo/meta" },
       { title: "구조화 데이터", href: "/admin/seo/structured-data" },
       { title: "사이트맵", href: "/admin/seo/sitemap" },
+      { title: "서치 콘솔", href: "/admin/search-console" },
     ],
   },
   { title: "박람회 관리", href: "/admin/fairs", icon: <Calendar /> },
